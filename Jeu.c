@@ -20,7 +20,7 @@
 #define LAUNCHER_CENTER 94
 #define LAUNCHER_DIV 48
 
-/* Order of the different directions in the picture: */
+/* Order of the different directions in the picture */
 #define DIR_LEFT -1
 #define DIR_RIGHT 1
 
@@ -38,7 +38,7 @@ typedef struct{
     double x ;
     double y ;
     int launcherimg ;
-    int edge ; /* This field allows to store the good sprite's launcher image to calculate the trajectory of the bubble */
+    int edge ; /* ... */
 }realPos;
 
 /* This structure records if a touch of the keyboard was rested or not */
@@ -69,7 +69,7 @@ bool bubbleEdges(SDL_Rect *pos){
 
 void HandleEvent(Input *inkey)
 {
-    SDL_Event event ; /* When we press a key, we create an event in this function */
+    SDL_Event event ;
 
     while ( SDL_PollEvent(&event) )
     {
@@ -101,7 +101,7 @@ int main(int argc, char* argv[])
     SDL_Rect black_bg ; /* Will 'refresh' the black background */
     SDL_Rect launcherPos ; /* Rectangle to store the position of the launcher in the window. */
     SDL_Rect bubblePos ; /* Rectangle to store the position of the bubble in the window. */
-    SDL_Rect launcherImage ; /* Allows to select the right sprite */
+    SDL_Rect launcherImage ; /* Allow to select the right sprite */
     SDL_Rect bubbleImage ;  /* Same thing */
 
     int colorkey ;
@@ -145,7 +145,7 @@ int main(int argc, char* argv[])
     /* First position of the bubble */
     bubbleReal.x = BUB_X ;
     bubbleReal.y = BUB_Y ;
-    bubbleReal.edge = 0 ; /* At the beggining, the bubble is not on one of the boards */
+    bubbleReal.edge = 0 ; /* At the beggining, the bubble is not on one of the edges */
 
     /* First sprite of the launcher when we start the game */
     launcherSprite = 22 ;
@@ -167,16 +167,6 @@ int main(int argc, char* argv[])
     black_bg.x = 0 ;
     black_bg.y = 0 ;
 
-    /* Set the parameters of the launche's sprite for the BlitSurface */
-    launcherImage.x = 0 ;
-    launcherImage.w = LAUNCHER_WIDTH ;
-    launcherImage.h = LAUNCHER_HEIGHT ;
-
-    /* Same operation for the Bubble */
-    bubbleImage.x = 0 ;
-    bubbleImage.w = BUB_SIZE ;
-    bubbleImage.h = BUB_SIZE ;
-
     memset(&in, 0, sizeof(in)); // Fill the whole "array" of zeros
 
     while ( !escape(&in) ){
@@ -189,7 +179,7 @@ int main(int argc, char* argv[])
         /* Draw the frame */
         SDL_BlitSurface(frame, NULL, screen, NULL) ;
 
-        /* Set the parameters of the launche's sprite for the BlitSurface */
+        /* Parameters of the launcher's sprites for the BlitSurface */
         launcherImage.x = 0 ;
         launcherImage.w = LAUNCHER_WIDTH ;
         launcherImage.h = LAUNCHER_HEIGHT ;
