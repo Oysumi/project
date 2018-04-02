@@ -4,6 +4,7 @@
 
 /* Approximate pi value */
 #define PI 3.14159265359
+#define test 5
 
 /* Size of the window */
 #define SCREEN_WIDTH  720
