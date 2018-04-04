@@ -37,7 +37,7 @@
 #define VELOCITY 2
 
 /* ---------------------------------------------------------------------------------------------------------------- */
-											     /* STRUCTURES */
+					       /* STRUCTURES */
 /* ---------------------------------------------------------------------------------------------------------------- */
 
 
@@ -46,6 +46,8 @@
 typedef struct{
     double x ;
     double y ;
+    double vx ; /* Vector x */
+    double vy ; /* Vector y */
     int launcherimg ;
     int edge ; /* Takes 1 if a bubble is on one of the edges of the frame (necessary to reset the bubble) */
 }realPos;
@@ -61,18 +63,18 @@ typedef struct{
 /* This structure allows to group all the parameters defining the screen */
 
 typedef struct{
-	SDL_Surface *screen ;
-	SDL_Surface *temp ;
-	SDL_Surface *launcher ; /* used for the Blit */
-	SDL_Surface *frame ;    /* usef for the Blit */
-	SDL_Surface *bubble ;   /* used for the Blit */
-	int colorkey ;
+    SDL_Surface *screen ;
+    SDL_Surface *temp ;
+    SDL_Surface *launcher ; /* used for the Display */
+    SDL_Surface *frame ;    /* used for the Display */
+    SDL_Surface *bubble ;   /* used for the Display */
+    int colorkey ;
 }screen;
 
 /* This structure allows to control the frames of the launcher */
 
 typedef struct{
-	int previousTime ;
+    int previousTime ;
     int currentTime ;
 }Time;
 
@@ -80,12 +82,12 @@ typedef struct{
 
 typedef struct{
 	SDL_Rect black_bg ; /* Will 'refresh' the black background */
-    SDL_Rect launcherPos ; /* Rectangle to store the position of the launcher in the window. */
-    SDL_Rect bubblePos ; /* Rectangle to store the position of the bubble in the window. */
-    SDL_Rect launcherImage ; /* Allow to select the right sprite */
-    SDL_Rect bubbleImage ;  /* Same thing */
-    int launcherSprite ; /* 45 sprites */
-    int bubbleSprite ; /* 24 sprites */
+        SDL_Rect launcherPos ; /* Rectangle to store the position of the launcher in the window. */
+	SDL_Rect bubblePos ; /* Rectangle to store the position of the bubble in the window. */
+	SDL_Rect launcherImage ; /* Allow to select the right sprite */
+	SDL_Rect bubbleImage ;  /* Same thing */
+	int launcherSprite ; /* 45 sprites */
+	int bubbleSprite ; /* 24 sprites */
 }image;
 
 
@@ -114,6 +116,12 @@ void initTime(Time *t) ;
 
 /* Function to initialize the positions */
 void initPos(image *graph, realPos *bub) ;
+
+/* Function to initialize the speed vectors */
+void initVectors(realPos *bub) ;
+
+/* Function to calculate the speed vectors */
+void setVectors(realPos *bub) ;
 
 /* Function to move the launcher */
 void launchermov(Input *in, image *graph, Time *t) ;

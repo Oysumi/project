@@ -30,6 +30,7 @@ bool bubblelaunched(Input *in){
 	if ( in->launched )
 		return true ;
 	return false ;
+	printf("%d", in->launched );
 }
 
 /* Function to initialize the screen */
@@ -78,7 +79,7 @@ void initTime(Time *t){
 
 void initPos(image *graph, realPos *bub){
 
-	/* First position of the bubble */
+    /* First position of the bubble */
     bub->x = BUB_X ;
     bub->y = BUB_Y ;
     bub->edge = 0 ; /* At the beggining, the bubble is not on one of the edges */
@@ -103,6 +104,22 @@ void initPos(image *graph, realPos *bub){
     graph->black_bg.x = 0 ;
     graph->black_bg.y = 0 ;
 
+}
+
+/* Function to initialize the speed vectors */
+
+void initVectors(realPos *bub){
+    bub->vx = 0 ;
+    bub->vy = 0 ;
+}
+
+/* Function to calculate the speed vectors */
+
+void setVectors(realPos *bub){
+  if ( (bub->vx == 0) && (bub->vy == 0) ){
+      bub->vx = cos( PI * (bub->launcherimg + 2) / LAUNCHER_DIV ) ;
+      bub->vy = sin( PI * (bub->launcherimg + 2) / LAUNCHER_DIV ) ;
+    }
 }
 
 /* Function to move the launcher */
@@ -130,7 +147,7 @@ void launchermov(Input *in, image *graph, Time *t){
 
 int bubblemov(realPos *bub, image *graph, Input *in){
 
-	if (bub->edge){
+    if ( bub->edge ){
         graph->bubblePos.x = BUB_X ;
         bub->x = BUB_X ;
         graph->bubblePos.y = BUB_Y ;
@@ -138,23 +155,40 @@ int bubblemov(realPos *bub, image *graph, Input *in){
         in->launched = 0 ;
         bub->edge = 0 ;
         return 0 ;
-        }
+    }
 
     if ( !bubbleEdges(&graph->bubblePos) ){
-        bub->x -= cos( PI * (bub->launcherimg + 2) / LAUNCHER_DIV ) * VELOCITY ;
-        bub->y -= sin( PI * (bub->launcherimg + 2) / LAUNCHER_DIV ) * VELOCITY ;
+        bub->x -= bub->vx ;
+        bub->y -= bub->vy ;
         graph->bubblePos.x = (int)bub->x ;
         graph->bubblePos.y = (int)bub->y ;
         if ( graph->bubbleSprite < 23 )
             graph->bubbleSprite += 1 ;
         else
-            graph->bubbleSprite = 0 ;
+	  graph->bubbleSprite = 0 ;
         }
 
     else{
-        in->launched = 0 ;
-        bub->edge = 1 ; /* The bubble is on one of the edges */
-    	}
+       if ( graph->bubblePos.x <= BOARD_LEFT ){
+	    bub->x = 2 * BOARD_LEFT - bub->x ;
+	    graph->bubblePos.x = (int)bub->x ; 
+	    graph->bubblePos.y = (int)bub->y ;
+	    }
+	 
+	if ( graph->bubblePos.x + BUB_SIZE >= BOARD_RIGHT ){
+	    bub->x = 3 * bub->x + BUB_SIZE - 2 * BOARD_RIGHT ;
+	    graph->bubblePos.x = (int)bub->x ; 
+	    graph->bubblePos.y = (int)bub->y ;
+        }
+
+	bub->vx = (-1)*bub->vx ;
+
+	if ( graph->bubblePos.y <= BOARD_TOP ){
+	  in->launched = 0 ;
+	  bub->edge = 1 ;
+	  return 0 ;
+	}
+    }
 
     return 0 ;
 
@@ -164,7 +198,7 @@ int bubblemov(realPos *bub, image *graph, Input *in){
 
 void updateScreen(image *graph, realPos *pos, screen *bub, Time *t){
 
-	/* Update the black background */
+    /* Update the black background */
     SDL_FillRect(bub->screen, &graph->black_bg, SDL_MapRGB(bub->screen->format, 0, 0 ,0)) ;
 
     /* Draw the frame */

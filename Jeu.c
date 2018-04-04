@@ -10,8 +10,9 @@ int main(int argc, char* argv[])
     Time check ;
 
     initScreen(&game) ;
-	initPos(&graphics, &bubbleReal) ;
-	initTime(&check) ;
+    initPos(&graphics, &bubbleReal) ;
+    initTime(&check) ;
+    initVectors(&bubbleReal) ;
  
     memset(&in, 0, sizeof(in)); // Fill the whole "array" of zeros
 
@@ -21,10 +22,12 @@ int main(int argc, char* argv[])
         updateScreen( &graphics, &bubbleReal, &game, &check ) ;
 
         if ( timereached(&check) ) /* controls the speed of the launcher (especially the FPS) */
-        	launchermov( &in, &graphics, &check ) ;
+            launchermov( &in, &graphics, &check ) ;
 
-        if ( bubblelaunched(&in) )
+        if ( bubblelaunched(&in) ){
+	    setVectors( &bubbleReal ) ;
             bubblemov( &bubbleReal, &graphics, &in ) ;
+	}
 
         SDL_UpdateRect(game.screen, 0, 0, 0, 0) ;
 
