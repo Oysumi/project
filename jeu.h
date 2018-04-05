@@ -36,6 +36,10 @@
 /* Velocity of bubbles */
 #define VELOCITY 2
 
+/* Size of bub_array[BUB_NY][BUB_NX] */
+#define BUB_NX 8 // max. number of bubbles in horizontal direction
+#define BUB_NY 11 // max. number of bubbles in vertical direction
+
 /* ---------------------------------------------------------------------------------------------------------------- */
 					       /* STRUCTURES */
 /* ---------------------------------------------------------------------------------------------------------------- */
@@ -46,8 +50,8 @@
 typedef struct{
     double x ;
     double y ;
-    double vx ; /* Vector x */
-    double vy ; /* Vector y */
+    double dx ; /* Dx (for the movement of the bubble) */
+    double dy ; /* Dy (for the movement of the bubble) */
     int launcherimg ;
     int edge ; /* Takes 1 if a bubble is on one of the edges of the frame (necessary to reset the bubble) */
 }realPos;
@@ -95,6 +99,7 @@ typedef struct{
                                                  /* FUNCTIONS */
 /* ---------------------------------------------------------------------------------------------------------------- */
 
+/* NOTE : A TRIER SELON L'ORDRE D'APPARITION DANS LE MAIN */
 
 /* Function to close the windows */
 bool escape(Input *inkey) ;
@@ -118,22 +123,28 @@ void initTime(Time *t) ;
 void initPos(image *graph, realPos *bub) ;
 
 /* Function to initialize the speed vectors */
-void initVectors(realPos *bub) ;
+void initDist(realPos *bub) ;
 
 /* Function to calculate the speed vectors */
-void setVectors(realPos *bub) ;
+void setDist(realPos *bub) ;
 
 /* Function to move the launcher */
 void launchermov(Input *in, image *graph, Time *t) ;
 
 /* Function to move the bubble */
-int bubblemov(realPos *bub, image *graph, Input *in) ;
+int bubblemov(realPos *bub, image *graph, Input *in, int *Tab) ;
 
 /* Function to refresh the elements of the screen with the time */
-void updateScreen(image *graph, realPos *pos, screen *bub, Time *t) ;
+void updateScreen(image *graph, realPos *pos, screen *bub, Time *t, int *Tab) ;
 
 /* Handle events coming from the user */
 void HandleEvent(Input *inkey) ;
+
+/* Function to set the bubble in a right position */
+int maillage(int **Tab, image *graph) ;
+
+/* Function fill the bub_array with ones */
+void fillbubarray(int **Tab, screen *bub, image *graph);
 
 
 /* ---------------------------------------------------------------------------------------------------------------- */
