@@ -86,7 +86,7 @@ typedef struct{
 
 typedef struct{
 	SDL_Rect black_bg ; /* Will 'refresh' the black background */
-        SDL_Rect launcherPos ; /* Rectangle to store the position of the launcher in the window. */
+    SDL_Rect launcherPos ; /* Rectangle to store the position of the launcher in the window. */
 	SDL_Rect bubblePos ; /* Rectangle to store the position of the bubble in the window. */
 	SDL_Rect launcherImage ; /* Allow to select the right sprite */
 	SDL_Rect bubbleImage ;  /* Same thing */
@@ -132,19 +132,19 @@ void setDist(realPos *bub) ;
 void launchermov(Input *in, image *graph, Time *t) ;
 
 /* Function to move the bubble */
-int bubblemov(realPos *bub, image *graph, Input *in, int *Tab) ;
+int bubblemov(realPos *bub, image *graph, Input *in, int Tab[BUB_NY][BUB_NX]) ;
 
 /* Function to refresh the elements of the screen with the time */
-void updateScreen(image *graph, realPos *pos, screen *bub, Time *t, int *Tab) ;
+void updateScreen(image *graph, realPos *pos, screen *bub, Time *t, int Tab[BUB_NY][BUB_NX]) ;
 
 /* Handle events coming from the user */
 void HandleEvent(Input *inkey) ;
 
-/* Function to set the bubble in a right position */
-int maillage(int **Tab, image *graph) ;
+/* Place the bubble on a precise position */
+void maillage(image *graph) ;
 
-/* Function fill the bub_array with ones */
-void fillbubarray(int **Tab, screen *bub, image *graph);
+/* Fills the bubarray of 1 when a bubble touched the ceiling */
+void fill_bubarray(int Tab[BUB_NY][BUB_NX], image *graph) ;
 
 
 /* ---------------------------------------------------------------------------------------------------------------- */

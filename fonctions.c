@@ -11,7 +11,7 @@ bool escape(Input *inkey){
 /* Function to know if the bubble is on one of the boards */
 
 bool bubbleEdges(SDL_Rect *pos){
-    if ( (pos->x <= BOARD_RIGHT - BUB_SIZE ) && ( pos->x >= BOARD_LEFT) && ( pos->y >= BOARD_TOP ) )
+    if ( (pos->x + BUB_SIZE <= BOARD_RIGHT ) && ( pos->x >= BOARD_LEFT ) && ( pos->y >= BOARD_TOP ) )
         return false ;
     return true ; /* the bubble is on one of the boards */
 }
@@ -19,7 +19,7 @@ bool bubbleEdges(SDL_Rect *pos){
 /* Function to check the time */
 
 bool timereached(Time *t){
-	if (t->currentTime - t->previousTime > 6)
+	if (t->currentTime - t->previousTime > 20)
 		return true ;
 	return false ;
 }
@@ -145,11 +145,9 @@ void launchermov(Input *in, image *graph, Time *t){
 
 /* Function to move the bubble */
 
-int bubblemov(realPos *bub, image *graph, Input *in, int *Tab){
+int bubblemov(realPos *bub, image *graph, Input *in, int Tab[BUB_NY][BUB_NX]){
 
-    printf("%d,%d\n", graph->bubblePos.x, graph->bubblePos.y);
     if ( bub->edge ){
-      maillage(&Tab, graph) ;
       bub->x = BUB_X ;
       bub->y = BUB_Y ;
       bub->dx = 0 ;
@@ -168,7 +166,7 @@ int bubblemov(realPos *bub, image *graph, Input *in, int *Tab){
         if ( graph->bubbleSprite < 23 )
             graph->bubbleSprite += 1 ;
         else
-	  graph->bubbleSprite = 0 ;
+	  		graph->bubbleSprite = 0 ;
         }
 
     else{
@@ -178,8 +176,8 @@ int bubblemov(realPos *bub, image *graph, Input *in, int *Tab){
 	    graph->bubblePos.y = (int)bub->y ;
 	    }
 	 
-	if ( graph->bubblePos.x + BUB_SIZE >= BOARD_RIGHT ){
-	    bub->x = 3 * bub->x + BUB_SIZE - 2 * BOARD_RIGHT ;
+	if ( graph->bubblePos.x > BOARD_RIGHT - BUB_SIZE ){
+	    bub->x = 2 * ( BOARD_RIGHT - BUB_SIZE ) - bub->x ;
 	    graph->bubblePos.x = (int)bub->x ; 
 	    graph->bubblePos.y = (int)bub->y ;
         }
@@ -187,10 +185,16 @@ int bubblemov(realPos *bub, image *graph, Input *in, int *Tab){
 	bub->dx = (-1)*bub->dx ;
 
 	if ( graph->bubblePos.y <= BOARD_TOP ){
-	  bub->edge = 1 ;
-	  return 0 ;
-	}
-    }
+
+		maillage( graph ) ;
+		printf("AVANT : %d\n", Tab[0][1]) ;
+		fill_bubarray( Tab, graph ) ;
+		printf("APRES : %d\n", Tab[0][1]) ;
+	  	bub->edge = 1 ;
+	  	in->launched = 0 ;
+	  	return 0 ;
+		}
+   	}	
 
     return 0 ;
 
@@ -198,8 +202,11 @@ int bubblemov(realPos *bub, image *graph, Input *in, int *Tab){
 
 /* Function to refresh the elements of the screen with the time */
 
-void updateScreen(image *graph, realPos *pos, screen *bub, Time *t, int *Tab){
-  
+void updateScreen(image *graph, realPos *pos, screen *bub, Time *t, int Tab[BUB_NY][BUB_NX]){
+
+	int i ;
+	image temp ;
+
     /* Update the black background */
     SDL_FillRect(bub->screen, &graph->black_bg, SDL_MapRGB(bub->screen->format, 0, 0 ,0)) ;
 
@@ -225,9 +232,23 @@ void updateScreen(image *graph, realPos *pos, screen *bub, Time *t, int *Tab){
 
     /* Faire une boucle qui affiche toutes les cases du tableau contenant un 1 */ 
     SDL_BlitSurface(bub->bubble, &graph->bubbleImage, bub->screen, &graph->bubblePos) ;
-    fillbubarray( &Tab, bub, graph) ;
+
+    temp.bubbleImage.y = BUB_SIZE * 1 ;
+  
+    for ( i = 0 ; i<=BUB_NX ; ++i ){
+    	if ( Tab[0][i] == 1 ){
+    		temp.bubbleImage.x = 0 ;
+    		temp.bubbleImage.w = BUB_SIZE ;
+    		temp.bubbleImage.h = BUB_SIZE ;
+    		temp.bubblePos.x = BOARD_LEFT + 40 * i ;
+    		temp.bubblePos.y = BOARD_TOP ;
+    		SDL_BlitSurface( bub->bubble, &temp.bubbleImage, bub->screen, &temp.bubblePos ) ;
+    	}
+    }
+
 
     t->currentTime = SDL_GetTicks() ;
+   
 
 }
 
@@ -258,54 +279,32 @@ void HandleEvent(Input *inkey)
     }
 }
 
-/* Function to set the bubble in a right position */
+/* Place the bubble on a precise position */
 
-int maillage(int **Tab, image *graph){
-    
-  unsigned int posx ; /* triangular position of the bubble */
-  unsigned int mod ; 
-  unsigned int i ; /* used for a loop for */
-  
-  posx = BOARD_RIGHT - BUB_SIZE - BOARD_LEFT / 8 ;
-  mod = graph->bubblePos.x % 35 ;
+void maillage(image *graph){
 
-  if ( (graph->bubblePos.x + mod) % 35 == 0 ){
-    graph->bubblePos.x += mod ;
-    printf("ENTREE DANS MAILLAGE MOD + : %d\n", graph->bubblePos.x) ;
-    for ( i = 0 ; i <= BUB_NX ; ++i ){
-      if ( graph->bubblePos.x - i*posx == 35 ){
-	Tab[0][i] = 1 ;
-	break ;
-      }
-    }
-    return 0 ;
-  }
+	int dx ; /* distance between two points */
+	int rest ; 
 
-  if ( (graph->bubblePos.x - mod) % 35 == 0 ){
-    graph->bubblePos.x -= mod ;
-    printf("ENTREE DANS MAILLAGE MOD - : %d\n", graph->bubblePos.x) ;
-    for ( i = 0 ; i <= BUB_NX ; ++i ){
-      if ( graph->bubblePos.x - i*posx == 35 ){
-	Tab[0][i] = 1 ;
-	break ;
-      }
-    }
-    return 1 ;
-  }
+	dx = ( (BOARD_RIGHT - BUB_SIZE) - BOARD_LEFT ) / 7 ;
+	rest = ( graph->bubblePos.x ) % dx ;
 
-  return 0 ;
+	if ( rest <= 20 ) {
+		graph->bubblePos.x -= rest ;
+	}
+	else {
+		graph->bubblePos.x += (dx - rest) ;
+	}
 
 }
 
-/* Function fill the bub_array with ones */
-void fillbubarray(int **Tab, screen *bub, image *graph){
-    
-    unsigned int i ;
-    for (i = 0 ; i<=BUB_NX ; ++i){
-      /* Faire une fonction qui fill le tableau avec 1 */
-      if (Tab[0][i] == 1){
-	SDL_BlitSurface(bub->bubble, &graph->bubbleImage, bub->screen, &graph->bubblePos) ;
-      }
-    }
+/* Fills the bubarray of 1 when a bubble touched the ceiling */
+
+void fill_bubarray(int Tab[BUB_NY][BUB_NX], image *graph){
+
+	unsigned int i ;
+	i = (graph->bubblePos.x - BOARD_LEFT) / 40 ;
+	printf("i = %d\n", i);
+	Tab[0][i] = 1 ;
 
 }

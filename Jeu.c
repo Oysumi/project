@@ -21,15 +21,15 @@ int main(int argc, char* argv[])
     while ( !escape(&in) ){
 
         HandleEvent( &in ) ;
-	updateScreen( &graphics, &bubbleReal, &game, &check, &bub_array[BUB_NY][BUB_NX] ) ;
+		updateScreen( &graphics, &bubbleReal, &game, &check, bub_array ) ;
 
         if ( timereached(&check) ) /* controls the speed of the launcher (especially the FPS) */
             launchermov( &in, &graphics, &check ) ;
 
         if ( bubblelaunched(&in) ){
-	    setDist( &bubbleReal ) ;
-            bubblemov( &bubbleReal, &graphics, &in, &bub_array[BUB_NY][BUB_NX] ) ;
-	}
+	    	setDist( &bubbleReal ) ;
+            bubblemov( &bubbleReal, &graphics, &in, bub_array ) ;
+		}
 
         SDL_UpdateRect(game.screen, 0, 0, 0, 0) ;
 
